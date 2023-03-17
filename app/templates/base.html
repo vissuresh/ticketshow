@@ -17,7 +17,10 @@
         <div class="collapse navbar-collapse ">
           <div class="navbar-nav">
             <a class="nav-link "  href="{{ url_for('index') }}">Home</a>
-            <a class="nav-link" href="#">Bookings</a>
+            {% if current_user.is_authenticated and current_user.username != "admin" %}
+              <a class="nav-link" href="#"> My Bookings</a>
+            {% endif %}
+            
             {% if current_user.is_anonymous %}
               <a class="nav-link" href="{{ url_for('login') }}">Login</a>
             {% else %}

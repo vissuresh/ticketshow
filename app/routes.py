@@ -139,3 +139,4 @@ def book_show(show_id):
         return redirect(url_for('book_show', show_id=show_id))
 
     return render_template('book_show.html', title="Book Show", show = show, venue=venue, available = available, form = form)
+
