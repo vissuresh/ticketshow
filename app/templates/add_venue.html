@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container">
+    <h2 class="mb-4">Add Venue</h2>
+    <form action="" method="POST" novalidate>
+        {{ form.hidden_tag() }}
+        <div class="row mb-1">
+            <div class="col-2">
+                <label for="name" class="form-label">{{form.name.label}}</label>
+            </div>
+            <div class="col" id="name">{{form.name(size=32)}}
+                {% for error in form.name.errors %}
+                <span style="color:red;">[{{error}}]</span>
+                {% endfor %}
+            </div>
+            
+        </div>
+
+        <div class="row mb-1">
+            <div class="col-2">
+                <label for="location" class="form-label">{{form.location.label}}</label>
+            </div>
+            <div class="col" id="location">{{form.location(size=32)}}
+                {% for error in form.location.errors %}
+                <span style="color:red;">[{{error}}]</span>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-2">
+                <label for="capacity" class="form-label">{{form.capacity.label}}</label>
+            </div>
+            <div class="col" id="capacity">{{ form.capacity() }}
+                {% for error in form.capacity.errors %}
+                <span style="color:red;">[{{error}}]</span>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="row mb-1">
+            <div class="col-2">
+                <label for="submit" class="form-label">{{form.submit()}}</label>
+            </div>
+        </div>
+    </form>
+
+</div>
+{% endblock %}
