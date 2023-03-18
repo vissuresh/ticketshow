@@ -24,8 +24,7 @@ def get_booking_info():
     data_dic = {}
 
     for booking in my_bookings:
-        if data_dic.get(booking.id) is None:
-            data_dic[booking.id] = {}
+        data_dic[booking.id] = {}
 
         data_dic[booking.id]['show'] = Show.query.get(booking.show_id)
         data_dic[booking.id]['venue'] = Venue.query.get(booking.venue_id)
@@ -46,7 +45,7 @@ def index():
 def login():
     if current_user.is_authenticated:
         flash("You're already logged in.")
-        return redirect(url_for('/index'))
+        return redirect(url_for('index'))
     
     form = LoginForm() 
     if form.validate_on_submit():
@@ -159,7 +158,5 @@ def book_show(show_id):
 @login_required
 def user_bookings():
     context = get_booking_info()
-    for item in context.items:
-        print(item)
         
-    return render_template('user_bookings.html', context = context)
+    return render_template('user_bookings.html', context=context

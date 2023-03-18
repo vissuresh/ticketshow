@@ -1,16 +1,38 @@
 {% extends "base.html" %}
-
 {% block content %}
 <div class="container">
     {% for id in context %}
-        <div class="row mb-3">
+        <div class="row mb-5 p-2" style ="background-color: #f2f2f2;">
+            <h3>{{context[id].show.name}}</h3>
+            <p><span class="fw-bold">Booking ID: </span>{{id}}</p>
 
-                <p>Booking id: {{id}}</p>
-                <p>Venue: {{id.venue.name}}</p>
-                <p>Show: {{id.show.name}}</p>
-                <p>Timing: {{id.show.timing}}</p>
+            <div class="row p-3 border bg-dark ms-1" data-bs-theme="dark" style = "color: white;">
+                <div class="col">
+                    <span class="fw-bold">Venue: </span>{{context[id].venue.name}}, {{context[id].venue.location}}
 
+                </div>
+
+                <div class="col">
+                    <span class="fw-bold">Show Timing: </span>{{context[id].show.timing.strftime('%I:%M %p, %d-%b-%Y')}}
+                </div>
+
+                <div class="col">
+                    <span class="fw-bold">No. of Tickets: </span>{{context[id].booking_info.qty}}
+                </div>
+
+                <div class ="col">
+                    <form action="#" method="get">
+                        <button type="submit" class="btn btn-danger" hret>CANCEL</button>
+                    </form>
+                </div>
+
+                <div class="row">
+                    <p><span class="fw-bold">Booking Time: </span>{{context[id].booking_info.timestamp.strftime('%I:%M %p, %d-%b-%Y')}}</p>
+                </div>
+                
+
+            </div>
         </div>
     {% endfor %}
 </div>
-{% endblock %}
+{% endblock %}  
