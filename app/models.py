@@ -44,7 +44,7 @@ class Show(db.Model):
     bookings = db.relationship('Booking', backref = 'show', lazy = 'dynamic')
 
     def __repr__(self):
-        return 'Name: {}, Venue: {}, Timing: {}, Price: {}'.format(self.name, Venue.query.get(self.venue_id).name, self.price)
+        return 'Name: {}\nVenue: {}\nTiming: {}\nPrice: {}'.format(self.name, Venue.query.get(self.venue_id).name, self.timing, self.price)
     
     
 class Booking(db.Model):
@@ -55,6 +55,9 @@ class Booking(db.Model):
     qty = db.Column(db.Integer)
     timestamp = db.Column(db.DateTime, index = True, default = datetime.datetime.now)
     rating = db.Column(db.Float)
+
+    def __repr__(self):
+        return 'id: {}\nShow: {}\nQuantity: {}'.format(self.id, Show.query.get(self.show_id), self.qty)
 
 @login.user_loader
 def load_user(id):

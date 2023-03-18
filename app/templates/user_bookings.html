@@ -1,7 +1,16 @@
-{% extends "base.html"}
+{% extends "base.html" %}
 
 {% block content %}
 <div class="container">
-    
+    {% for id in context %}
+        <div class="row mb-3">
+
+                <p>Booking id: {{id}}</p>
+                <p>Venue: {{id.venue.name}}</p>
+                <p>Show: {{id.show.name}}</p>
+                <p>Timing: {{id.show.timing}}</p>
+
+        </div>
+    {% endfor %}
 </div>
 {% endblock %}

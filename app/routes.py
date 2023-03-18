@@ -19,6 +19,21 @@ def check_admin_decor(my_route):
     return wrapper_func
 
 
+def get_booking_info():
+    my_bookings = current_user.bookings
+    data_dic = {}
+
+    for booking in my_bookings:
+        if data_dic.get(booking.id) is None:
+            data_dic[booking.id] = {}
+
+        data_dic[booking.id]['show'] = Show.query.get(booking.show_id)
+        data_dic[booking.id]['venue'] = Venue.query.get(booking.venue_id)
+        data_dic[booking.id]['booking_info'] = booking
+
+    return data_dic
+
+
 @app.route('/')
 @app.route('/index')
 @login_required
@@ -140,3 +155,11 @@ def book_show(show_id):
 
     return render_template('book_show.html', title="Book Show", show = show, venue=venue, available = available, form = form)
 
+@app.route('/user_bookings', methods = ['GET', 'POST'])
+@login_required
+def user_bookings():
+    context = get_booking_info()
+    for item in context.items:
+        print(item)
+        
+    return render_template('user_bookings.html', context = context)
