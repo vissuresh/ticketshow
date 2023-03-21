@@ -2,42 +2,59 @@
 
 {% block content %}
 
+<style>
+    p > span{
+        font-weight: bold;
+    }
+</style>
+
 <div class="container">
-    <h3>Booking Info: </h3>
-    <p>Name: {{show.name}}</p>
-    <p>Venue: {{venue.name}}, {{venue.location}}</p>
-    <p>Timing: 
-        {% if show.timing %}
-            {{show.timing.strftime('%I:%M %p, %d-%b-%Y')}}
-        {% else %}
-            Not Specified!
-        {% endif %}
-    </p>
-    <p>Price: Rs. {{show.price}}</p>
+    <div class="row">
+        <div class = "col">
+            <h3>Book Tickets:</h3>
+            <p><span>Venue Capacity: </span>{{venue.capacity}}</p>
+            <p><span>Available: </span>{{available}}</p>
+        
+            <form action = "" method="POST" novalidate>
+                {{ form.hidden_tag() }}
+        
+                <label for="qty" class="form-label mb-4">{{form.qty.label}}</label>
+                    {{ form.qty(size=4) }}
+        
+                {% for error in form.qty.errors %}
+                    <span style="color:red;">[{{error}}]</span>
+                {% endfor %}
+        
+                <p>
+                    <label for="submit" class="form-label">{{form.submit()}}</label>
+                </p>
+            </form>
+        </div>
 
-    <h3>Book Tickets:</h3>
-    <p>Maximum Capacity: 
-        {{venue.capacity}}
-    </p>
-    <p>Available Nos. :
-        {{available}}
-    </p>
-
-    <form action = "" method="POST" novalidate>
-        {{ form.hidden_tag() }}
-
-        <label for="qty" class="form-label">{{form.qty.label}}</label>
-            {{ form.qty(size=4) }}
-
-        {% for error in form.qty.errors %}
-            <span style="color:red;">[{{error}}]</span>
-        {% endfor %}
-        <p>
-                <label for="submit" class="form-label">{{form.submit()}}</label>
-        </p>
-
-
-    </form>
+        <div class="col">
+            <h3>Booking Info: </h3>
+            <table class = "table table-light table-striped">
+                <tbody>
+                    <tr>
+                        <th scope = "row">Show Name</th>
+                        <td>{{show.name}}</td>
+                    </tr>
+                    <tr>
+                        <th scope = "row">Venue: </th>
+                        <td>{{venue.name}}, {{venue.location}}</td>
+                    </tr>
+                    <tr>
+                        <th scope = "row">Timing: </th>
+                        <td>{{show.timing.strftime('%I:%M %p, %d-%b-%Y')}}</td>
+                    </tr>
+                    <tr>
+                        <th scope = "row">Price in Rs. </th>
+                        <td>{{show.price}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 
 {% endblock %}

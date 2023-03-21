@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    th, td{
+        text-align: center;;
+    }
+</style>
+
+<div class = "container">
+    <div class="d-flex justify-content-center mb-4">
+        <a href="{{url_for('create_venue')}}">
+            <button type="button" class="btn btn-primary">Add Venue</button>
+        </a>
+    </div>
+
+    <table class="table table-dark table-striped">
+        <thead>
+          <tr>
+            <th scope="col">Venue ID</th>
+            <th scope="col">Name</th>
+            <th scope="col">Location</th>
+            <th scope="col">Capacity</th>
+            <th scope="col">ACTIONS</th>
+          </tr>
+        </thead>
+        <tbody>
+
+        {% for venue in venues %}
+            <tr>
+            <th scope="row">{{venue.id}}</th>
+            <td>{{venue.name}}</td>
+            <td>{{venue.location}}</td>
+            <td>{{venue.capacity}}</td>
+            <td>
+                <div class="btn-group" role="group" aria-label="Venue Actions">
+                    <a href="{{ url_for('edit_venue',venue_id=venue.id) }}">
+                        <button type="button" class="btn btn-warning">EDIT</button>
+                    </a>
+                    
+                    <a href="{{ url_for('delete_venue',venue_id=venue.id) }}">
+                        <button type="button" class="btn btn-danger">DELETE</button>
+                    </a>
+                    
+                  </div>
+            </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+</div>
+
+{% endblock %}

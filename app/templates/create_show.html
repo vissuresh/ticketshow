@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        <div class="col">        
+                                    
+            <h2 class="mb-4">{{title}}</h2>
+
+            <form action="" method="POST" novalidate>
+                {{ form.hidden_tag() }}
+                <div class="row mb-1">
+                    <div class="col-2">
+                        <label for="name" class="form-label">{{form.name.label}}</label>
+                    </div>
+                    <div class="col" id="name">{{form.name(size=32)}}
+                        {% for error in form.name.errors %}
+                        <span style="color:red;">[{{error}}]</span>
+                        {% endfor %}
+                    </div>
+        
+                </div>
+        
+                <div class="row mb-1">
+                    <div class="col-2">
+                        <label for="caption" class="form-label">{{form.caption.label}}</label>
+                    </div>
+                    <div class="col" id="location">{{form.caption() }}
+                        {% for error in form.caption.errors %}
+                        <span style="color:red;">[{{error}}]</span>
+                        {% endfor %}
+                    </div>
+                </div> 
+        
+                <div class="row mb-1">
+                    <div class="col-2">
+                        <label for="location" class="form-label">{{form.timing.label}}</label>
+                    </div>
+                    <div class="col" id="location">{{form.timing() }}
+                        {% for error in form.timing.errors %}
+                        <span style="color:red;">[{{error}}]</span>
+                        {% endfor %}
+                    </div>
+                </div> 
+        
+                <div class="row mb-1">
+                    <div class="col-2">
+                        <label for="location" class="form-label">{{form.venue.label}}</label>
+                    </div>
+                    <div class="col" id="location">{{form.venue(size=15) }}
+                        {% for error in form.venue.errors %}
+                        <span style="color:red;">[{{error}}]</span>
+                        {% endfor %}
+                    </div>
+                </div>  
+        
+        
+                <div class="row mb-3">
+                    <div class="col-2">
+                        <label for="capacity" class="form-label">{{form.price.label}}</label>
+                    </div>
+                    <div class="col" id="capacity">{{ form.price() }}
+                        {% for error in form.price.errors %}
+                        <span style="color:red;">[{{error}}]</span>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="row mb-1">
+                    <div class="col-2">
+                        <label for="location" class="form-label">{{form.tags.label}}</label>
+                    </div>
+                    <div class="col" id="location">{{form.tags() }}
+                        {% for error in form.tags.errors %}
+                        <span style="color:red;">[{{error}}]</span>
+                        {% endfor %}
+                    </div>
+                    <p>Separated by a whitespace</p>
+                </div>  
+        
+                <div class="row mb-1">
+                    <div class="col-2">
+                        <label for="submit" class="form-label">{{form.submit()}}</label>
+                    </div>
+                </div>
+            </form>
+        
+        </div>
+
+        <div class="col">
+
+            {%if existing_venues %}
+                <h4 class="mb-4">Existing venues for this show:</h4>
+                <ul class="mb-4">
+                    {% for venue in existing_venues %}
+                        <li><span style="font-weight: bold;">Venue ID: {{venue.id}} | </span>{{venue.name}}, {{venue.location}}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
+        </div>
+
+
+    </div>
+</div>
+
+{% endblock %}
