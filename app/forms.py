@@ -22,17 +22,6 @@ class VenueForm(FlaskForm):
     caption = TextAreaField('Caption (optional)')
     submit = SubmitField('Submit')
 
-    def Name_and_location_validation(self, except_venue_id = None):
-        if except_venue_id is None:
-            exist = Venue.query.filter_by(name = self.name.data, location = self.location.data).first()
-
-        else:
-            exist = Venue.query.filter(Venue.id != except_venue_id).filter_by(name = self.name.data, location = self.location.data).first()
-
-        if exist is not None:
-            return False
-        return True
-
 class ShowForm(FlaskForm):
 
     name = StringField('Name', validators=[DataRequired()])
@@ -49,7 +38,6 @@ class ShowForm(FlaskForm):
         for tag in tags.data.split(' '):
             if len(tag) > 16:
                 raise ValidationError('Length of tag must be <= 16')
-            
             for c in tag:
                 if c in string.punctuation:
                     raise ValidationError('Tags cannot contain punctuation')
@@ -77,11 +65,6 @@ class RegistrationForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired()])
     password2 = PasswordField('Re-enter Password', validators=[DataRequired(), EqualTo('password')])
     submit = SubmitField('Create User')
-
-    def validate_username(self, username):
-        user = User.query.filter_by(username = username.data).first()
-        if user is not None:
-            raise ValidationError('Username exists!')
         
 
 class BookingForm(FlaskForm):

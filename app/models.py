@@ -2,6 +2,7 @@ from app import db, login
 import datetime
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask_login import UserMixin
+from sqlalchemy import UniqueConstraint
 
 class User(UserMixin,db.Model):
     id = db.Column(db.Integer, primary_key = True)
@@ -30,8 +31,10 @@ class Venue(db.Model):
     shows = db.relationship('Show', secondary = 'show_venue', backref = 'venues', lazy = 'dynamic')
     bookings = db.relationship('Booking', backref = 'venue', cascade = 'all, delete')
 
+    __table_args__ = (UniqueConstraint('name', 'location', name='u_venue_name_loc'),)
+
     def __repr__(self):
-        return '<Name: {}, Location: {}'.format(self.name, self.location)
+        return '<Name: {}, Location: {}>'.format(self.name, self.location)
     
     
 class Show(db.Model):
@@ -44,6 +47,8 @@ class Show(db.Model):
 
     tags = db.relationship('Tag', backref = 'show', lazy = 'dynamic', cascade = 'all, delete')
     bookings = db.relationship('Booking', backref = 'show', lazy = 'dynamic', cascade = 'all, delete')
+
+    __table_args__ = (UniqueConstraint('name', 'timing', name='u_venue_name_loc'),)
 
     def set_data(self, data):
         self.name = data['name']
