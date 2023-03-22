@@ -1,7 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, IntegerField, DateTimeLocalField, SelectMultipleField, TextAreaField
-from wtforms.validators import DataRequired, ValidationError, EqualTo
-from app.models import User, Venue, Show
+from wtforms.validators import DataRequired, ValidationError, EqualTo, NumberRange
 import datetime
 
 class SelectMultipleField(SelectMultipleField):
@@ -34,7 +33,6 @@ class ShowForm(FlaskForm):
 
     def validate_tags(self, tags):
         import string
-        
         for tag in tags.data.split(' '):
             if len(tag) > 16:
                 raise ValidationError('Length of tag must be <= 16')
@@ -45,19 +43,6 @@ class ShowForm(FlaskForm):
     def validate_timing(self, timing):
         if timing.data <= datetime.datetime.now():
             raise ValidationError('Error 404: Time Machine not found :( ')
-        
-    def Name_and_Timing_validation(self, except_show_id = None):
-        exist = Show.query.filter_by(name = self.name.data, timing = self.timing.data)
-
-        if except_show_id is not None:
-            exist = exist.filter(Show.id != except_show_id)
-
-        exist = exist.first()
-
-        if exist is None:
-            return True
-        return False
-    
     
 
 class RegistrationForm(FlaskForm):
@@ -75,9 +60,16 @@ class BookingForm(FlaskForm):
     def validate_qty(self, qty):
         if(qty.data > self.available):
             raise ValidationError('Quantity greater than the available tickets!')
-        
         if(qty.data <=0):
             raise ValidationError('Tickets quantity should be positive!')
-        
         if(qty.data>10):
             raise ValidationError('Maximum of 10 tickets per booking!')
+        
+
+class SearchForm(FlaskForm):
+    venue_search = StringField('Venue')
+    show_search = StringField('Show')
+    tag_search = StringField('Tag')
+    from_date = DateTimeLocalField('From', format="%Y-%m-%dT%H:%M")
+    till_date = DateTimeLocalField('Till', format="%Y-%m-%dT%H:%M")
+    submit = SubmitField('Search')

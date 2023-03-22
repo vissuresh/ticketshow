@@ -1,5 +1,5 @@
 from app import app,db
-from app.forms import LoginForm, RegistrationForm, VenueForm, ShowForm, BookingForm
+from app.forms import LoginForm, RegistrationForm, VenueForm, ShowForm, BookingForm, SearchForm
 from flask import render_template, redirect, url_for, flash, request
 from app.models import User, Venue, Show, Show_Venue, Booking, Tag
 from flask_login import current_user, login_user, logout_user, login_required
@@ -35,13 +35,14 @@ def get_booking_info():
     return data_dic
 
 
-@app.route('/')
-@app.route('/index')
+@app.route('/', methods = ['GET','POST'])
+@app.route('/index', methods = ['GET','POST'])
 @login_required
 def index():
-
-    return render_template('index.html', title="Home", context = Venue.query.all())
-
+    form = SearchForm()
+    if form.validate_on_submit():
+        return form.data
+    return render_template('index.html', title = "Search", form=form)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
