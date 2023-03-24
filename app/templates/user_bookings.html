@@ -1,36 +1,71 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="container">
-    {% for id in context %}
-        <div class="row mb-5 p-2" style ="background-color: #f2f2f2;">
-            <h3>{{context[id].show.name}}</h3>
-            <p><span class="fw-bold">Booking ID: </span>{{id}}</p>
-
-            <div class="row p-3 border bg-dark ms-1" data-bs-theme="dark" style = "color: white;">
-                <div class="col">
-                    <span class="fw-bold">Venue: </span>{{context[id].venue.name}}, {{context[id].venue.location}}
-
+    {% for booking in bookings %}
+        <div class="container mb-5 p-2" style ="background-color: #f2f2f2;">
+            <div class="row">
+                <div class="col-1">
+                    <h3>{{booking.show.name}}</h3>    
                 </div>
-
                 <div class="col">
-                    <span class="fw-bold">Show Timing: </span>{{context[id].show.timing.strftime('%I:%M %p, %d-%b-%Y')}}
+                    <span class="fw-bold">Booking ID: </span>{{booking.id}}
                 </div>
+            </div>
+            
 
-                <div class="col">
-                    <span class="fw-bold">No. of Tickets: </span>{{context[id].booking_info.qty}}
-                </div>
+            <div class="row px-3 py-2 border bg-dark ms-1" data-bs-theme="dark" style = "color: white;">
 
-                <div class ="col">
-                    <form action="#" method="get">
-                        <button type="submit" class="btn btn-danger" hret>CANCEL</button>
-                    </form>
+                <div class="row">
+                    <div class="col-4 mb-2">
+                        <span class="fw-bold">Venue: </span>{{booking.venue.name}}, {{booking.venue.location}}
+    
+                    </div>
+    
+                    <div class="col-3">
+                        <span class="fw-bold">Show Timing: </span>{{booking.show.timing.strftime('%I:%M %p, %d-%b-%Y')}}
+                    </div>
+    
+                    <div class="col-2">
+                        <span class="fw-bold">No. of Tickets: </span>{{booking.qty}}
+                    </div>
                 </div>
 
                 <div class="row">
-                    <p><span class="fw-bold">Booking Time: </span>{{context[id].booking_info.timestamp.strftime('%I:%M %p, %d-%b-%Y')}}</p>
-                </div>
-                
+                    <div class="col-8">
+                        <span class="fw-bold">Booking Time: </span>{{booking.timestamp.strftime('%I:%M %p, %d-%b-%Y')}}
+                    </div>
+                    
 
+                    <div class ="col-2">
+                    {% if now > booking.show.timing %}
+                        <button type="submit" class="btn btn-danger" disabled>CANCEL</button>
+                    </div>
+                    
+                    <div class="col">
+                        <form action="" method="POST">
+                            <input type="hidden" name = "booking_id" value = "{{booking.id}}">  
+                            
+                            <div class="row">
+                                <div class="col">
+                                    <input type = "number" min="0" max="5" step ="0.1" name = "rating" placeholder="{{booking.rating}}">
+                                </div>
+                                <div class="col">
+                                    <button type="submit" class="btn btn-warning">RATE</button>
+                                </div>
+                            </div>
+
+    
+                        </form>
+                    </div>
+
+    
+                    {% else %}
+                        <a href = "url_for('cancel_booking',booking_id = booking.id)">
+                            <button type="submit" class="btn btn-danger">CANCEL</button>
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
             </div>
         </div>
     {% endfor %}

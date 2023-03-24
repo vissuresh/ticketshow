@@ -1,6 +1,7 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, IntegerField, DateTimeLocalField, SelectMultipleField, TextAreaField
-from wtforms.validators import DataRequired, ValidationError, EqualTo, NumberRange
+from flask_wtf.file import FileAllowed
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, IntegerField, DateTimeLocalField, SelectMultipleField, TextAreaField, DecimalField, FileField
+from wtforms.validators import DataRequired, ValidationError, EqualTo
 import datetime
 
 class SelectMultipleField(SelectMultipleField):
@@ -19,16 +20,17 @@ class VenueForm(FlaskForm):
     location = StringField('Location', validators=[DataRequired()])
     capacity = IntegerField('Capacity', validators=[DataRequired()])
     caption = TextAreaField('Caption (optional)')
+    pic = FileField('Upload Image',validators=[FileAllowed(['jpg', 'jpeg', 'png'])], default=None)
     submit = SubmitField('Submit')
 
 class ShowForm(FlaskForm):
-
     name = StringField('Name', validators=[DataRequired()])
     caption = TextAreaField('Caption (optional)')
     venue = SelectMultipleField('Select Venue(s)', validators=[DataRequired()])
     timing = DateTimeLocalField('Date and Time', validators=[DataRequired()], format="%Y-%m-%dT%H:%M")
     price = IntegerField('Price', validators=[DataRequired()])
     tags = TextAreaField('Tags (optional)')
+    pic = FileField('Upload Image',validators=[FileAllowed(['jpg', 'jpeg', 'png'])], default=None)
     submit = SubmitField('Submit')
 
     def validate_tags(self, tags):
@@ -73,3 +75,8 @@ class SearchForm(FlaskForm):
     from_date = DateTimeLocalField('From', format="%Y-%m-%dT%H:%M")
     till_date = DateTimeLocalField('Till', format="%Y-%m-%dT%H:%M")
     submit = SubmitField('Search')
+
+class RatingForm(FlaskForm):
+    rating = DecimalField(render_kw={"style": "width: 100px;"})
+    booking_id = None
+    submit = SubmitField('Rate')

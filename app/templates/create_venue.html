@@ -8,7 +8,7 @@
         {{warning}}
     {% endif %}
 
-    <form id = "" action="" method="POST" novalidate>
+    <form id = "" action="" method="POST" enctype="multipart/form-data" novalidate>
         {{ form.hidden_tag() }}
         <div class="row mb-1">
             <div class="col-2">
@@ -55,11 +55,23 @@
             </div>
         </div>
 
+        <div class="row mb-3">
+            <div class="col-2">
+                <label for="pic" class="form-label">{{form.pic.label}}</label>
+            </div>
+            <div class="col" id="pic">{{ form.pic() }}
+                {% for error in form.pic.errors %}
+                <span style="color:red;">[{{error}}]</span>
+                {% endfor %}
+            </div>
+        </div>
+
         <div class="row mb-1">
             <div class="col-2">
                 <label for="submit" class="form-label">{{form.submit()}}</label>
             </div>
         </div>
+
     </form>
 
 </div>

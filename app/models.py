@@ -9,7 +9,7 @@ class User(UserMixin,db.Model):
     username = db.Column(db.String(32), index = True, unique = True)
     password_hash = db.Column(db.String(128))
 
-    bookings = db.relationship('Booking', backref = 'customer', lazy = 'dynamic')
+    bookings = db.relationship('Booking', backref = 'user', lazy = 'dynamic')
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
@@ -27,11 +27,22 @@ class Venue(db.Model):
     location = db.Column(db.String(64), index = True)
     caption = db.Column(db.String(128))
     capacity = db.Column(db.Integer)
+    pic = db.Column(db.LargeBinary)
 
     shows = db.relationship('Show', secondary = 'show_venue', backref = 'venues', lazy = 'dynamic')
     bookings = db.relationship('Booking', backref = 'venue', cascade = 'all, delete')
 
     __table_args__ = (UniqueConstraint('name', 'location', name='u_venue_name_loc'),)
+
+    def set_data(self, data):
+        self.name = data['name']
+        self.caption = data['caption']
+        self.location = data['location']
+        self.capacity = data['capacity']
+        print(data)
+        print(data['pic'])
+        if(data['pic'].filename != ''):
+            self.pic = data['pic'].read()
 
     def __repr__(self):
         return '<Name: {}, Location: {}>'.format(self.name, self.location)
@@ -42,8 +53,8 @@ class Show(db.Model):
     name = db.Column(db.String(32), index = True)
     caption = db.Column(db.String(128))
     timing = db.Column(db.DateTime, index = True)
-    price = db.Column(db.Integer)    
-    rating = db.Column(db.Float)
+    price = db.Column(db.Integer)
+    pic = db.Column(db.LargeBinary)
 
     tags = db.relationship('Tag', backref = 'show', lazy = 'dynamic', cascade = 'all, delete')
     bookings = db.relationship('Booking', backref = 'show', lazy = 'dynamic', cascade = 'all, delete')
@@ -55,6 +66,8 @@ class Show(db.Model):
         self.caption = data['caption']
         self.timing = data['timing']
         self.price = data['price']
+        if(data['pic'].filename != ''):
+            self.pic = data['pic'].read()
 
     def __repr__(self):
         return 'Name: {}'.format(self.name)
@@ -69,8 +82,8 @@ class Show_Venue(db.Model):
 class Tag(db.Model):
     show_id = db.Column(db.Integer, db.ForeignKey('show.id'), primary_key = True)
     tag = db.Column(db.String(16), primary_key = True)
-    
-    
+
+
 class Booking(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
@@ -82,7 +95,6 @@ class Booking(db.Model):
 
     def __repr__(self):
         return 'id: {}\nShow: {}\nVenue: {}'.format(self.id, Show.query.get(self.show_id))
-
 
 @login.user_loader
 def load_user(id):

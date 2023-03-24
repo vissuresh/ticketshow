@@ -8,7 +8,7 @@
                                     
             <h2 class="mb-4">{{title}}</h2>
 
-            <form action="" method="POST" novalidate>
+            <form action="" method="POST" enctype="multipart/form-data" novalidate>
                 {{ form.hidden_tag() }}
                 <div class="row mb-1">
                     <div class="col-2">
@@ -26,7 +26,7 @@
                     <div class="col-2">
                         <label for="caption" class="form-label">{{form.caption.label}}</label>
                     </div>
-                    <div class="col" id="location">{{form.caption() }}
+                    <div class="col" id="caption">{{form.caption() }}
                         {% for error in form.caption.errors %}
                         <span style="color:red;">[{{error}}]</span>
                         {% endfor %}
@@ -35,9 +35,9 @@
         
                 <div class="row mb-1">
                     <div class="col-2">
-                        <label for="location" class="form-label">{{form.timing.label}}</label>
+                        <label for="timing" class="form-label">{{form.timing.label}}</label>
                     </div>
-                    <div class="col" id="location">{{form.timing() }}
+                    <div class="col" id="timing">{{form.timing() }}
                         {% for error in form.timing.errors %}
                         <span style="color:red;">[{{error}}]</span>
                         {% endfor %}
@@ -58,9 +58,9 @@
         
                 <div class="row mb-3">
                     <div class="col-2">
-                        <label for="capacity" class="form-label">{{form.price.label}}</label>
+                        <label for="price" class="form-label">{{form.price.label}}</label>
                     </div>
-                    <div class="col" id="capacity">{{ form.price() }}
+                    <div class="col" id="price">{{ form.price() }}
                         {% for error in form.price.errors %}
                         <span style="color:red;">[{{error}}]</span>
                         {% endfor %}
@@ -78,6 +78,17 @@
                     </div>
                     <p>Separated by a whitespace</p>
                 </div>  
+
+                <div class="row mb-3">
+                    <div class="col-2">
+                        <label for="pic" class="form-label">{{form.pic.label}}</label>
+                    </div>
+                    <div class="col" id="pic">{{ form.pic() }}
+                        {% for error in form.pic.errors %}
+                        <span style="color:red;">[{{error}}]</span>
+                        {% endfor %}
+                    </div>
+                </div>
         
                 <div class="row mb-1">
                     <div class="col-2">

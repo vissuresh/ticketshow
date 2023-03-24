@@ -1,11 +1,11 @@
 from app import app,db
 from app.forms import LoginForm, RegistrationForm, VenueForm, ShowForm, BookingForm, SearchForm
-from flask import render_template, redirect, url_for, flash, request
+from flask import render_template, redirect, url_for, flash, request, abort
 from app.models import User, Venue, Show, Show_Venue, Booking, Tag
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
 from sqlalchemy.exc import IntegrityError
-
+import datetime
 
 def check_admin_decor(my_route):
 
@@ -19,20 +19,6 @@ def check_admin_decor(my_route):
         
     wrapper_func.__name__ = my_route.__name__
     return wrapper_func
-
-
-def get_booking_info():
-    my_bookings = current_user.bookings
-    data_dic = {}
-
-    for booking in my_bookings:
-        data_dic[booking.id] = {}
-
-        data_dic[booking.id]['show'] = Show.query.get(booking.show_id)
-        data_dic[booking.id]['venue'] = Venue.query.get(booking.venue_id)
-        data_dic[booking.id]['booking_info'] = booking
-
-    return data_dic
 
 
 @app.route('/', methods = ['GET','POST'])
@@ -106,7 +92,8 @@ def create_venue():
     form = VenueForm()
 
     if form.validate_on_submit():
-        new_venue = Venue(name = form.name.data, location = form.location.data, capacity = form.capacity.data, caption = form.caption.data)
+        new_venue = Venue()
+        new_venue.set_data(form.data)
         db.session.add(new_venue)
         try:
             db.session.commit()
@@ -114,7 +101,7 @@ def create_venue():
             db.session.rollback()
             flash('Venue with same name and location EXISTS')
         else:
-            flash("Venue added Successfully!")
+            flash("Venue created Successfully!")
         
         return redirect(url_for('manage_venues'))
     
@@ -130,10 +117,7 @@ def edit_venue(venue_id):
     form = VenueForm()
 
     if form.validate_on_submit():
-        venue.name = form.name.data
-        venue.location = form.location.data
-        venue.capacity = form.capacity.data
-        venue.caption = form.caption.data
+        venue.set_data(form.data)
 
         try:
             db.session.commit()
@@ -141,7 +125,7 @@ def edit_venue(venue_id):
             db.session.rollback()
             flash('Venue with same name and location EXISTS')
         else:
-            flash("Venue added Successfully!")
+            flash("Venue updated Successfully!")
         
         return redirect(url_for('manage_venues'))
     
@@ -179,6 +163,7 @@ def create_show():
     if form.validate_on_submit():
         new_show_obj = Show()
         new_show_obj.set_data(form.data)
+
         db.session.add(new_show_obj)
 
         #add venue entries
@@ -200,7 +185,7 @@ def create_show():
             db.session.rollback()
             flash('Show with same name and timing EXISTS')
         else:
-            flash("Venue added Successfully!")
+            flash("Show created Successfully!")
 
         return redirect(url_for('manage_shows'))
 
@@ -227,45 +212,37 @@ def edit_show(show_id):
     
 
     if form.validate_on_submit():
+        show_to_edit.set_data(form.data)
+        selected_form_venue_ids = [i for i in form.venue.data]
 
-        if form.Name_and_Timing_validation(except_show_id = show_id) == False:
-            flash("Show with same NAME and TIMING exists!")
+        for val in selected_form_venue_ids:
+            venue = Venue.query.get(val)
+            if venue not in show_to_edit.venues:
+                show_to_edit.venues.append(venue)
 
-        else:
-            show_to_edit.set_data(form.data)
+        for venue in existing_venues:
+            if venue.id not in selected_form_venue_ids:
+                show_to_edit.venues.remove(venue)
 
-            selected_form_venue_ids = [i for i in form.venue.data]
+        show_to_edit.tags.delete()
 
-            for val in selected_form_venue_ids:
-                venue = Venue.query.get(val)
-                try:
-                    show_to_edit.venues.append(venue)
-                except:
-                    pass
+        #add tags 
+        tags = set()
+        for x in form.tags.data.split(" "):
+            if x!='':
+                tags.add(x.lower())
 
-            for venue in existing_venues:
-                if venue.id not in selected_form_venue_ids:
-                    show_to_edit.venues.remove(venue)
+        for tag in tags:
+            show_to_edit.tags.append(Tag(tag=tag))
+        #Added tags
 
-            show_to_edit.tags.delete()
+        try:
+            db.session.commit()
+            flash('Show updated successfully!')
 
-            #add tags 
-            tags = set()
-            for x in form.tags.data.split(" "):
-                if x!='':
-                    tags.add(x.lower())
-
-            for tag in tags:
-                show_to_edit.tags.append(Tag(tag=tag))
-            #Added tags
-
-            try:
-                db.session.commit()
-                flash('Show updated successfully!')
-
-            except IntegrityError:
-                db.session.rollback()
-                flash('Show with same name and timing EXISTS!')            
+        except IntegrityError:
+            db.session.rollback()
+            flash('Show with same name and timing EXISTS!')            
         
         return redirect(url_for('manage_shows'))
         
@@ -320,12 +297,45 @@ def book_show(show_id, venue_id):
 
     return render_template('book_show.html', title="Book Show", show = show, venue=venue, available = available, form = form)
 
-@app.route('/user_bookings')
+
+@app.route('/cancel_booking/<int:booking_id>')
+@login_required
+def cancel_booking(booking_id):
+    booking = Booking.query.get_or_404(booking_id)
+    if booking.user_id != current_user.id:
+        abort(404)
+
+    if(booking.show.timing < datetime.datetime.now()):
+        flash("This show has passed!")
+    else:
+        db.session.delete(booking)
+        try:
+            db.session.commit()
+            flash('Booking CANCELLED')
+        except:
+            flash('Unknown error occurred')
+            db.session.rollback() 
+    return redirect(url_for('user_bookings'))
+    
+
+@app.route('/user_bookings', methods = ['GET','POST'])
 @login_required
 def user_bookings():
-    context = get_booking_info()
-        
-    return render_template('user_bookings.html', context=context)
+
+    if request.method=='POST':
+        booking = Booking.query.get(int(request.form['booking_id']))
+        booking.rating = float(request.form['rating'])
+
+        try:
+            db.session.commit()
+            flash('Rating updated for booking ID {}'.format(booking.id))
+        except:
+            flash('Unknown error occurred')
+            db.session.rollback()
+
+        return redirect(url_for('user_bookings'))
+    
+    return render_template('user_bookings.html', bookings = current_user.bookings, now = datetime.datetime.now())
 
 
 @app.route('/manage_venues')
