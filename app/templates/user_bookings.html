@@ -60,7 +60,7 @@
 
     
                     {% else %}
-                        <a href = "url_for('cancel_booking',booking_id = booking.id)">
+                        <a href = "{{url_for('cancel_booking',booking_id = booking.id)}}">
                             <button type="submit" class="btn btn-danger">CANCEL</button>
                         </a>
                     </div>

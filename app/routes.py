@@ -271,11 +271,9 @@ def delete_show(show_id):
 @app.route('/book_show/show<show_id>_venue<venue_id>', methods=['GET','POST'])
 @login_required
 def book_show(show_id, venue_id):
-    show = Show.query.get_or_404(show_id)
-    venue = Venue.query.get_or_404(venue_id)
     show_venue = Show_Venue.query.get_or_404((show_id,venue_id))
-    
-    available = venue.capacity - show_venue.sold
+    show = Show.query.get(show_id)
+    venue = Venue.query.get(venue_id)
 
     form = BookingForm()
     form.available = venue.capacity - show_venue.sold
@@ -292,10 +290,9 @@ def book_show(show_id, venue_id):
         except:
             db.session.rollback()
             flash('Unknown error occurred')
-
         return redirect(url_for('book_show', show_id=show_id, venue_id = venue_id))
 
-    return render_template('book_show.html', title="Book Show", show = show, venue=venue, available = available, form = form)
+    return render_template('book_show.html', title="Book Show", show=show, venue=venue, form = form)
 
 
 @app.route('/cancel_booking/<int:booking_id>')
@@ -308,6 +305,8 @@ def cancel_booking(booking_id):
     if(booking.show.timing < datetime.datetime.now()):
         flash("This show has passed!")
     else:
+        show_venue = Show_Venue.query.get((booking.show_id, booking.venue_id))
+        show_venue.sold -= booking.qty
         db.session.delete(booking)
         try:
             db.session.commit()
