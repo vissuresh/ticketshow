@@ -5,7 +5,8 @@ from app.models import User, Venue, Show, Show_Venue, Booking, Tag
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
 from sqlalchemy.exc import IntegrityError
-import datetime
+from datetime import datetime
+from base64 import b64encode, decode
 
 def check_admin_decor(my_route):
 
@@ -197,11 +198,10 @@ def create_show():
 @check_admin_decor
 def edit_show(show_id):
     show_to_edit = Show.query.get_or_404(show_id)
-
+    form = ShowForm()
+    
     #Find existing venues
     existing_venues = show_to_edit.venues
-
-    form = ShowForm()
 
     #Choices for venues
     venue_choices = []
@@ -210,7 +210,6 @@ def edit_show(show_id):
     form.venue.choices = venue_choices
     #Created choices
     
-
     if form.validate_on_submit():
         show_to_edit.set_data(form.data)
         selected_form_venue_ids = [i for i in form.venue.data]
@@ -304,7 +303,7 @@ def cancel_booking(booking_id):
     if booking.user_id != current_user.id:
         abort(404)
 
-    if(booking.show.timing < datetime.datetime.now()):
+    if(booking.show.timing < datetime.now()):
         flash("This show has passed!")
     else:
         show_venue = Show_Venue.query.get((booking.show_id, booking.venue_id))
@@ -335,7 +334,23 @@ def user_bookings():
 
         return redirect(url_for('user_bookings'))
     
-    return render_template('user_bookings.html', bookings = current_user.bookings, now = datetime.datetime.now())
+    return render_template('user_bookings.html', bookings = current_user.bookings, now = datetime.now())
+
+@app.route('/venue_page/<int:venue_id>')
+def venue_page(venue_id):
+    venue = Venue.query.get_or_404(venue_id)
+    pic_base64 = None
+    if venue.pic:
+        pic_base64 = b64encode(venue.pic).decode('utf-8')
+    return render_template('venue_page.html', title=venue.name, venue = venue, pic_base64 = pic_base64)
+
+@app.route('/show_page/<int:show_id>')
+def show_page(show_id):
+    show = Show.query.get_or_404(show_id)
+    pic_base64 = None
+    if show.pic:
+        pic_base64 = b64encode(show.pic).decode('utf-8')
+    return render_template('show_page.html', title=show.name, show = show, pic_base64 = pic_base64)
 
 
 @app.route('/manage_venues')

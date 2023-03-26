@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+
+    <!-- Head section -->
+    <div class="row mb-5 bg-body p-3">
+        <div class="col-3">
+            <h2>{{show.name}}</h2>
+        </div>
+        <div class="col-1 align-self-end">
+            <h6>Show ID: {{show.id}}</h6>
+        </div>
+    </div>
+    <!-- end head section -->
+
+    <div class="row">
+
+        <div class="col-7 bg-dark text-white p-4">
+
+            <div class="row">
+                <div class="col-2"> <h4>Timing: </h4> </div>
+                <div class="col align-self-center"> <h5>{{show.timing.strftime('%I:%M %p, %d-%b-%Y')}}</h5> </div>
+            </div>
+
+            <div class="row">
+                <div class="col-2"> <h4>Price: </h4> </div>
+                <div class="col align-self-center"> <h5>{{show.price}}</h5> </div>
+            </div>
+
+        </div>
+
+        <div class="col">
+
+            <div class="row mb-4">
+                {% if pic_base64 %}
+                    <img src = "data:image/jpeg;base64,{{pic_base64}}" alt = "{{show.name}} Picture">
+                {% else %}
+                <div class="col"><h4>Picture: </h4></div>
+                <div class="col"><h6>Not provided!</h6></div>
+                {% endif %}
+            </div>
+
+            <div class="row">
+                {% if show.caption %}
+                    <h6 class="text-center">{{show.caption}}</h6>
+                {% else %}
+                <div class="col"><h4>Caption: </h4></div>
+                <div class="col"><h6>Not provided!</h6></div>
+                {% endif %}
+            </div>
+
+        </div>
+
+    </div>
+</div>
+{% endblock %}

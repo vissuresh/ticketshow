@@ -1,8 +1,8 @@
 from app import db, login
-import datetime
+from datetime import datetime
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask_login import UserMixin
-from sqlalchemy import UniqueConstraint, ForeignKeyConstraint
+from sqlalchemy import UniqueConstraint
 
 class User(UserMixin,db.Model):
     id = db.Column(db.Integer, primary_key = True)
@@ -91,7 +91,7 @@ class Booking(db.Model):
     venue_id = db.Column(db.Integer, db.ForeignKey('venue.id'))
 
     qty = db.Column(db.Integer)
-    timestamp = db.Column(db.DateTime, index = True, default = datetime.datetime.now)
+    timestamp = db.Column(db.DateTime, index = True, default = datetime.now)
     rating = db.Column(db.Float)
 
     def __repr__(self):
