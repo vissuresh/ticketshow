@@ -86,12 +86,12 @@ class Tag(db.Model):
 
 class Booking(db.Model):
     id = db.Column(db.Integer, primary_key = True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable = False)
-    show_id = db.Column(db.Integer, db.ForeignKey('show.id'), nullable = False)
-    venue_id = db.Column(db.Integer, db.ForeignKey('venue.id'), nullable = False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    show_id = db.Column(db.Integer, db.ForeignKey('show.id'))
+    venue_id = db.Column(db.Integer, db.ForeignKey('venue.id'))
 
-    qty = db.Column(db.Integer)
-    timestamp = db.Column(db.DateTime, index = True, default = datetime.now)
+    qty = db.Column(db.Integer, nullable = False)
+    timestamp = db.Column(db.DateTime, index = True, default = datetime.now, nullable = False)
     rating = db.Column(db.Float)
 
     def __repr__(self):
