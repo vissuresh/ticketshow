@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: b059e706cab9
+Revision ID: 06fe12aed9e9
 Revises: 
-Create Date: 2023-03-24 19:29:34.318859
+Create Date: 2023-03-26 13:57:17.951069
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'b059e706cab9'
+revision = '06fe12aed9e9'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -24,7 +24,7 @@ def upgrade():
     sa.Column('caption', sa.String(length=128), nullable=True),
     sa.Column('timing', sa.DateTime(), nullable=True),
     sa.Column('price', sa.Integer(), nullable=True),
-    sa.Column('data', sa.LargeBinary(), nullable=True),
+    sa.Column('pic', sa.LargeBinary(), nullable=True),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('name', 'timing', name='u_venue_name_loc')
     )
@@ -47,6 +47,7 @@ def upgrade():
     sa.Column('location', sa.String(length=64), nullable=True),
     sa.Column('caption', sa.String(length=128), nullable=True),
     sa.Column('capacity', sa.Integer(), nullable=True),
+    sa.Column('pic', sa.LargeBinary(), nullable=True),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('name', 'location', name='u_venue_name_loc')
     )
@@ -57,8 +58,8 @@ def upgrade():
     op.create_table('booking',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=True),
-    sa.Column('venue_id', sa.Integer(), nullable=True),
     sa.Column('show_id', sa.Integer(), nullable=True),
+    sa.Column('venue_id', sa.Integer(), nullable=True),
     sa.Column('qty', sa.Integer(), nullable=True),
     sa.Column('timestamp', sa.DateTime(), nullable=True),
     sa.Column('rating', sa.Float(), nullable=True),
@@ -76,7 +77,8 @@ def upgrade():
     sa.Column('sold', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['show_id'], ['show.id'], ),
     sa.ForeignKeyConstraint(['venue_id'], ['venue.id'], ),
-    sa.PrimaryKeyConstraint('show_id', 'venue_id')
+    sa.PrimaryKeyConstraint('show_id', 'venue_id'),
+    sa.UniqueConstraint('show_id', 'venue_id', name='u_show_venue')
     )
     op.create_table('tag',
     sa.Column('show_id', sa.Integer(), nullable=False),

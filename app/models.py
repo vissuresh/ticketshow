@@ -2,7 +2,7 @@ from app import db, login
 import datetime
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask_login import UserMixin
-from sqlalchemy import UniqueConstraint
+from sqlalchemy import UniqueConstraint, ForeignKeyConstraint
 
 class User(UserMixin,db.Model):
     id = db.Column(db.Integer, primary_key = True)
@@ -39,8 +39,6 @@ class Venue(db.Model):
         self.caption = data['caption']
         self.location = data['location']
         self.capacity = data['capacity']
-        print(data)
-        print(data['pic'])
         if(data['pic'].filename != ''):
             self.pic = data['pic'].read()
 
@@ -78,6 +76,8 @@ class Show_Venue(db.Model):
     venue_id = db.Column(db.Integer, db.ForeignKey('venue.id'), primary_key = True)
     sold = db.Column(db.Integer, default = 0)
 
+    __table_args__ = (UniqueConstraint('show_id', 'venue_id', name='u_show_venue'),)
+
     
 class Tag(db.Model):
     show_id = db.Column(db.Integer, db.ForeignKey('show.id'), primary_key = True)
@@ -87,14 +87,15 @@ class Tag(db.Model):
 class Booking(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    venue_id = db.Column(db.Integer, db.ForeignKey('venue.id'))
     show_id = db.Column(db.Integer, db.ForeignKey('show.id'))
+    venue_id = db.Column(db.Integer, db.ForeignKey('venue.id'))
+
     qty = db.Column(db.Integer)
     timestamp = db.Column(db.DateTime, index = True, default = datetime.datetime.now)
     rating = db.Column(db.Float)
 
     def __repr__(self):
-        return 'id: {}\nShow: {}\nVenue: {}'.format(self.id, Show.query.get(self.show_id))
+        return 'id: {} Show: {} Venue: {}'.format(self.id, self.show, self.venue)
 
 @login.user_loader
 def load_user(id):

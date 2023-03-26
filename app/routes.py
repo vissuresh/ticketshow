@@ -222,6 +222,8 @@ def edit_show(show_id):
 
         for venue in existing_venues:
             if venue.id not in selected_form_venue_ids:
+                bookings = Booking.query.filter_by(show_id=show_id, venue_id = venue.id)
+                bookings.delete()
                 show_to_edit.venues.remove(venue)
 
         show_to_edit.tags.delete()
@@ -320,7 +322,6 @@ def cancel_booking(booking_id):
 @app.route('/user_bookings', methods = ['GET','POST'])
 @login_required
 def user_bookings():
-
     if request.method=='POST':
         booking = Booking.query.get(int(request.form['booking_id']))
         booking.rating = float(request.form['rating'])
