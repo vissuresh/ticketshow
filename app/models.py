@@ -6,8 +6,8 @@ from sqlalchemy import UniqueConstraint
 
 class User(UserMixin,db.Model):
     id = db.Column(db.Integer, primary_key = True)
-    username = db.Column(db.String(32), index = True, unique = True)
-    password_hash = db.Column(db.String(128))
+    username = db.Column(db.String(32), index = True, unique = True, nullable = False)
+    password_hash = db.Column(db.String(128) , nullable = False)
 
     bookings = db.relationship('Booking', backref = 'user', lazy = 'dynamic')
 
@@ -23,10 +23,10 @@ class User(UserMixin,db.Model):
 
 class Venue(db.Model):
     id = db.Column(db.Integer, primary_key = True)
-    name = db.Column(db.String(32), index = True)
-    location = db.Column(db.String(64), index = True)
+    name = db.Column(db.String(32), index = True, nullable = False)
+    location = db.Column(db.String(64), index = True, nullable = False)
     caption = db.Column(db.String(128))
-    capacity = db.Column(db.Integer)
+    capacity = db.Column(db.Integer, nullable = False)
     pic = db.Column(db.LargeBinary)
 
     shows = db.relationship('Show', secondary = 'show_venue', backref = 'venues', lazy = 'dynamic')
@@ -48,10 +48,10 @@ class Venue(db.Model):
     
 class Show(db.Model):
     id = db.Column(db.Integer, primary_key = True)
-    name = db.Column(db.String(32), index = True)
+    name = db.Column(db.String(32), index = True, nullable = False)
     caption = db.Column(db.String(128))
-    timing = db.Column(db.DateTime, index = True)
-    price = db.Column(db.Integer)
+    timing = db.Column(db.DateTime, index = True, nullable = False)
+    price = db.Column(db.Integer, nullable = False)
     pic = db.Column(db.LargeBinary)
 
     tags = db.relationship('Tag', backref = 'show', lazy = 'dynamic', cascade = 'all, delete')
@@ -74,7 +74,7 @@ class Show_Venue(db.Model):
     __tablename__ = 'show_venue'
     show_id = db.Column(db.Integer, db.ForeignKey('show.id'), primary_key = True)
     venue_id = db.Column(db.Integer, db.ForeignKey('venue.id'), primary_key = True)
-    sold = db.Column(db.Integer, default = 0)
+    sold = db.Column(db.Integer, default = 0, nullable = False)
 
     __table_args__ = (UniqueConstraint('show_id', 'venue_id', name='u_show_venue'),)
 
@@ -86,9 +86,9 @@ class Tag(db.Model):
 
 class Booking(db.Model):
     id = db.Column(db.Integer, primary_key = True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    show_id = db.Column(db.Integer, db.ForeignKey('show.id'))
-    venue_id = db.Column(db.Integer, db.ForeignKey('venue.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable = False)
+    show_id = db.Column(db.Integer, db.ForeignKey('show.id'), nullable = False)
+    venue_id = db.Column(db.Integer, db.ForeignKey('venue.id'), nullable = False)
 
     qty = db.Column(db.Integer)
     timestamp = db.Column(db.DateTime, index = True, default = datetime.now)
