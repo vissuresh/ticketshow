@@ -6,4 +6,4 @@ def create_shell_context():
     return {'db':db, 'User':User, 'Venue': Venue, 'Show':Show, 'Show_Venue':Show_Venue}
 
 if __name__ == '__main__':
-    app.run(port=8080)
+    app.run(port=5000)

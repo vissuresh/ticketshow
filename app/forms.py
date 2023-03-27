@@ -69,11 +69,10 @@ class BookingForm(FlaskForm):
         
 
 class SearchForm(FlaskForm):
-    venue_search = StringField('Venue')
-    show_search = StringField('Show')
-    tag_search = StringField('Tag')
-    from_date = DateTimeLocalField('From', format="%Y-%m-%dT%H:%M")
-    till_date = DateTimeLocalField('Till', format="%Y-%m-%dT%H:%M")
+    venue_search = StringField('Venue',render_kw={"placeholder": "Search Venues"})
+    show_search = StringField('Show',render_kw={"placeholder": "Search Shows/Tags"})
+    from_date = DateTimeLocalField('From', format="%Y-%m-%dT%H:%M", render_kw={"placeholder": "From DateTime: "})
+    till_date = DateTimeLocalField('Till', format="%Y-%m-%dT%H:%M", render_kw={"placeholder": "To DateTime:"})
     submit = SubmitField('Search')
 
 class RatingForm(FlaskForm):

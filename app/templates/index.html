@@ -4,12 +4,35 @@
 <div class="container px-4">
     <form action = "" method="POST" novalidate>
         {{form.hidden_tag()}}
-        <p>{{form.venue_search.label}}{{form.venue_search()}}</p>
-        <p>{{form.show_search.label}}{{form.show_search()}}</p>
-        <p>{{form.tag_search.label}}{{form.tag_search()}}</p>
-        <p>{{form.from_date.label}}{{form.from_date()}}</p>
-        <p>{{form.till_date.label}}{{form.till_date()}}</p>
-        <p>{{form.submit()}}</p>
+
+        <div class="row">
+            <div class="col">
+                {{form.venue_search()}}
+                {% for error in form.venue_search.errors %}
+                <span style="color:red;">[{{error}}]</span>
+                {% endfor %}
+            </div>
+            <div class="col">
+                {{form.show_search()}}
+                {% for error in form.show_search.errors %}
+                <span style="color:red;">[{{error}}]</span>
+                {% endfor %}
+            </div>
+            <div class="col">
+                {{form.from_date.label}} {{form.from_date()}}
+                {% for error in form.from_date.errors %}
+                <span style="color:red;">[{{error}}]</span>
+                {% endfor %}
+            </div>
+            <div class="col">
+                {{form.till_date.label}} {{form.till_date()}}
+                {% for error in form.till_date.errors %}
+                <span style="color:red;">[{{error}}]</span>
+                {% endfor %}
+            </div>
+            <div class="col">
+                {{form.submit()}}
+            </div>
     </form>
 
 </div>

@@ -6,7 +6,7 @@ from sqlalchemy import UniqueConstraint
 
 class User(UserMixin,db.Model):
     id = db.Column(db.Integer, primary_key = True)
-    username = db.Column(db.String(32), index = True, unique = True, nullable = False)
+    username = db.Column(db.String(32), unique = True, nullable = False)
     password_hash = db.Column(db.String(128) , nullable = False)
 
     bookings = db.relationship('Booking', backref = 'user', lazy = 'dynamic')
@@ -51,11 +51,12 @@ class Show(db.Model):
     name = db.Column(db.String(32), index = True, nullable = False)
     caption = db.Column(db.String(128))
     timing = db.Column(db.DateTime, index = True, nullable = False)
-    price = db.Column(db.Integer, nullable = False)
+    price = db.Column(db.Integer, index = True, nullable = False)
     pic = db.Column(db.LargeBinary)
 
     tags = db.relationship('Tag', backref = 'show', lazy = 'dynamic', cascade = 'all, delete')
     bookings = db.relationship('Booking', backref = 'show', lazy = 'dynamic', cascade = 'all, delete')
+
 
     __table_args__ = (UniqueConstraint('name', 'timing', name='u_venue_name_loc'),)
 

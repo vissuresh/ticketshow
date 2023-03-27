@@ -6,7 +6,8 @@ from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
 from sqlalchemy.exc import IntegrityError
 from datetime import datetime
-from base64 import b64encode, decode
+from base64 import b64encode
+from sqlalchemy import or_
 
 def check_admin_decor(my_route):
 
@@ -22,13 +23,63 @@ def check_admin_decor(my_route):
     return wrapper_func
 
 
+@app.route('/search/all')
+def search():
+    args = request.args
+    show_search = args.get('show')
+    venue_search = args.get('venue')
+    from_date = args.get('from')
+    till_date = args.get('till')
+    sv = set()
+
+    all_shows = Show.query
+    if show_search:
+        all_shows = all_shows.filter(or_(Show.name.like('%'+show_search+'%'), Show.tags.any(Tag.tag == show_search)))
+
+    if from_date:
+        from_date = datetime.strptime(from_date, '%Y-%m-%d %H:%M:%S')
+        all_shows = all_shows.filter(Show.timing >= from_date)
+
+    if till_date:
+        till_date = datetime.strptime(till_date, '%Y-%m-%d %H:%M:%S')
+        all_shows = all_shows.filter(Show.timing <= till_date)
+
+    all_venues = Venue.query
+    if venue_search:
+        all_venues = all_venues.filter(or_(Venue.name.like('%'+venue_search+'%'),Venue.location.like('%'+venue_search+'%')))
+
+    for show in all_shows:
+        for venue in all_venues:
+            if venue in show.venues:
+                sv.add((show,venue))
+
+    res = list(sv)
+
+
+    return render_template('display_results.html', title = "Search Results", res = res)
+
+
 @app.route('/', methods = ['GET','POST'])
 @app.route('/index', methods = ['GET','POST'])
 @login_required
 def index():
     form = SearchForm()
     if form.validate_on_submit():
-        return form.data
+        params = {}
+        if form.venue_search.data !='':
+            params['venue'] = form.venue_search.data
+        if form.show_search.data !='':
+            params['show'] = form.show_search.data
+        
+        if form.from_date.data !='':
+            params['from'] = form.from_date.data
+
+        if form.till_date.data !='':
+            params['till'] = form.till_date.data
+
+        return redirect(url_for('search', **params))
+
+        
     return render_template('index.html', title = "Search", form=form)
 
 @app.route('/login', methods=['GET', 'POST'])
