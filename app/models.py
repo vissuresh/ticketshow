@@ -57,7 +57,6 @@ class Show(db.Model):
     tags = db.relationship('Tag', backref = 'show', lazy = 'dynamic', cascade = 'all, delete')
     bookings = db.relationship('Booking', backref = 'show', lazy = 'dynamic', cascade = 'all, delete')
 
-
     __table_args__ = (UniqueConstraint('name', 'timing', name='u_venue_name_loc'),)
 
     def set_data(self, data):

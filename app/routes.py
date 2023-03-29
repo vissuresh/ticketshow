@@ -9,20 +9,8 @@ from datetime import datetime
 from base64 import b64encode
 from sqlalchemy import or_
 
-def check_admin_decor(my_route):
 
-    def wrapper_func(*args, **kwargs):
-
-        if current_user.username != "admin":
-            flash("Access denied. No admin privileges for {}".format(current_user.username))
-            return redirect(url_for('index'))
-        else:
-            return my_route(*args, **kwargs)
-        
-    wrapper_func.__name__ = my_route.__name__
-    return wrapper_func
-
-
+""" Use as API
 @app.route('/search/all')
 def search():
     args = request.args
@@ -54,9 +42,21 @@ def search():
                 sv.add((show,venue))
 
     res = list(sv)
-
-
     return render_template('display_results.html', title = "Search Results", res = res)
+"""
+
+def check_admin_decor(my_route):
+
+    def wrapper_func(*args, **kwargs):
+
+        if current_user.username != "admin":
+            flash("Access denied. No admin privileges for {}".format(current_user.username))
+            return redirect(url_for('index'))
+        else:
+            return my_route(*args, **kwargs)
+        
+    wrapper_func.__name__ = my_route.__name__
+    return wrapper_func
 
 
 @app.route('/', methods = ['GET','POST'])
@@ -64,23 +64,33 @@ def search():
 @login_required
 def index():
     form = SearchForm()
+    sv = []
+    all_shows = Show.query
+    all_venues = Venue.query
     if form.validate_on_submit():
-        params = {}
-        if form.venue_search.data !='':
-            params['venue'] = form.venue_search.data
-        if form.show_search.data !='':
-            params['show'] = form.show_search.data
-        
-        if form.from_date.data !='':
-            params['from'] = form.from_date.data
+        if form.show_search.data:
+            show_search = form.show_search.data
+            all_shows = all_shows.filter(or_(Show.name.like('%'+show_search+'%'), Show.tags.any(Tag.tag == show_search)))
 
-        if form.till_date.data !='':
-            params['till'] = form.till_date.data
+        if form.from_date.data:
+            from_date = datetime.strptime(form.from_date.data, '%Y-%m-%d %H:%M:%S')
+            all_shows = all_shows.filter(Show.timing >= from_date)
 
-        return redirect(url_for('search', **params))
+        if form.till_date.data:
+            till_date = datetime.strptime(form.till_date.data, '%Y-%m-%d %H:%M:%S')
+            all_shows = all_shows.filter(Show.timing <= till_date)
 
-        
-    return render_template('index.html', title = "Search", form=form)
+        if form.venue_search.data:
+            venue_search = form.venue_search.data
+            all_venues = all_venues.filter(or_(Venue.name.like('%'+venue_search+'%'),Venue.location.like('%'+venue_search+'%')))
+
+    all_shows = all_shows.order_by(Show.timing.asc())
+    for show in all_shows:
+        for venue in show.venues:
+            if venue in all_venues:
+                sv.append((show,venue))
+   
+    return render_template('index.html', title = "Search", form=form, sv = sv)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -320,9 +330,13 @@ def delete_show(show_id):
     return redirect((url_for('manage_shows')))
 
 
-@app.route('/book_show/show<show_id>_venue<venue_id>', methods=['GET','POST'])
+@app.route('/book_show/', methods=['GET','POST'])
 @login_required
-def book_show(show_id, venue_id):
+def book_show():
+    show_id = request.args.get('show_id')
+    venue_id = request.args.get('venue_id')
+    if not show_id or not venue_id:
+        abort(404)
     show_venue = Show_Venue.query.get_or_404((show_id,venue_id))
     show = Show.query.get(show_id)
     venue = Venue.query.get(venue_id)
@@ -342,7 +356,7 @@ def book_show(show_id, venue_id):
         except:
             db.session.rollback()
             flash('Unknown error occurred')
-        return redirect(url_for('book_show', show_id=show_id, venue_id = venue_id))
+        return redirect(url_for('index'))
 
     return render_template('book_show.html', title="Book Show", show=show, venue=venue, form = form)
 

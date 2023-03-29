@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileAllowed
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, IntegerField, DateTimeLocalField, SelectMultipleField, TextAreaField, DecimalField, FileField
-from wtforms.validators import DataRequired, ValidationError, EqualTo
+from wtforms.validators import DataRequired, ValidationError, EqualTo, Optional
 import datetime
 
 class SelectMultipleField(SelectMultipleField):
@@ -69,10 +69,10 @@ class BookingForm(FlaskForm):
         
 
 class SearchForm(FlaskForm):
-    venue_search = StringField('Venue',render_kw={"placeholder": "Search Venues"})
-    show_search = StringField('Show',render_kw={"placeholder": "Search Shows/Tags"})
-    from_date = DateTimeLocalField('From', format="%Y-%m-%dT%H:%M", render_kw={"placeholder": "From DateTime: "})
-    till_date = DateTimeLocalField('Till', format="%Y-%m-%dT%H:%M", render_kw={"placeholder": "To DateTime:"})
+    venue_search = StringField('Venue',render_kw={"placeholder": "Search Venues"}, validators = [Optional(),])
+    show_search = StringField('Show',render_kw={"placeholder": "Search Shows/Tags"}, validators = [Optional(),])
+    from_date = DateTimeLocalField('From', format="%Y-%m-%dT%H:%M", render_kw={"placeholder": "From DateTime: "}, validators = [Optional(),])
+    till_date = DateTimeLocalField('Till', format="%Y-%m-%dT%H:%M", render_kw={"placeholder": "To DateTime:"}, validators = [Optional(),])
     submit = SubmitField('Search')
 
 class RatingForm(FlaskForm):
