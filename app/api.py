@@ -5,6 +5,7 @@ from app.validation import NotFoundError, AccessDeniedError, BusinessValidationE
 from flask import request
 from app import db
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy import or_
 
 
 user_fields = {'id': fields.Integer, 'username': fields.String}
@@ -426,6 +427,8 @@ class SearchShowsAPI(Resource):
         till_timing = args.get('till_datetime', None)    
         min_price = args.get('min_price', None)
         max_price = args.get('max_price', None) 
+        min_rating = args.get('min_rating', None)
+        max_rating = args.get('max_rating', None)
         tag = args.get('tag', None)
 
         shows = Show.query
@@ -451,6 +454,14 @@ class SearchShowsAPI(Resource):
         
         if max_price:
             shows = shows.filter(Show.price <= max_price)
+
+        if min_rating:
+            min_rating = float(min_rating)
+            all_shows = all_shows.filter(or_(Show.rating >= min_rating, Show.rating == None))
+
+        if max_rating:
+            max_rating = float(max_rating)
+            all_shows = all_shows.filter(or_(Show.rating <= max_rating, Show.rating == None))
 
         if tag:
             tag = tag.lower()

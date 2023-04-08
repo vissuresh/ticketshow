@@ -31,7 +31,7 @@
             <tr>
             <th scope="row">{{show.id}}</th>
             <td>{{show.name}}</td>
-            <td>{{show.timing}}</td>
+            <td>{{show.timing.strftime('%I:%M %p, %d-%b-%Y')}}</td>
             <td>{{show.price}}</td>
             <td>{{show.rating}}</td>
             <td>
@@ -41,7 +41,7 @@
                     </a>
                     
                     <a href="{{ url_for( 'delete_show',show_id = show.id ) }}">
-                        <button type="button" class="btn btn-danger">DELETE</button>
+                        <button type="button" class="btn btn-danger" onclick="return showConfirmation()">DELETE</button>
                     </a>
                     
                   </div>

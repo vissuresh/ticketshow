@@ -4,10 +4,10 @@
     {% for booking in bookings %}
         <div class="container mb-5 p-2" style ="background-color: #f2f2f2;">
             <div class="row">
-                <div class="col-1">
+                <div class="col">
                     <h3>{{booking.show.name}}</h3>    
                 </div>
-                <div class="col">
+                <div class="col d-flex justify-content-end  ">
                     <span class="fw-bold">Booking ID: </span>{{booking.id}}
                 </div>
             </div>
@@ -47,11 +47,20 @@
                             
                             <div class="row">
                                 <div class="col">
-                                    <input type = "number" min="0" max="5" step ="0.1" name = "rating" placeholder="{{booking.rating}}">
+                                {% if booking.rating %}
+                                    <input type = "number" min="0" max="5" step ="0.1" name = "rating" placeholder="{{booking.rating}}" disabled>
+                                </div>
+                                <div class="col">
+                                    <button type="submit" class="btn btn-warning" disabled>RATED</button>
+                                </div>
+                                {% else %}
+                                    <input type = "number" min="0" max="5" step ="0.1" name = "rating" placeholder="Ex. 3.4">
                                 </div>
                                 <div class="col">
                                     <button type="submit" class="btn btn-warning">RATE</button>
                                 </div>
+                                {% endif %}
+
                             </div>
 
     

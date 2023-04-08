@@ -37,16 +37,22 @@ def index():
             all_shows = all_shows.filter(or_(Show.name.like('%'+show_search+'%'), Show.tags.any(Tag.tag == show_search.lower())))
 
         if form.from_date.data:
-            from_date = datetime.strptime(form.from_date.data, '%Y-%m-%d %H:%M:%S')
-            all_shows = all_shows.filter(Show.timing >= from_date)
+            all_shows = all_shows.filter(Show.timing >= form.from_date.data)
 
         if form.till_date.data:
-            till_date = datetime.strptime(form.till_date.data, '%Y-%m-%d %H:%M:%S')
-            all_shows = all_shows.filter(Show.timing <= till_date)
+            all_shows = all_shows.filter(Show.timing <= form.till_date.data)
 
         if form.venue_search.data:
             venue_search = form.venue_search.data
             all_venues = all_venues.filter(or_(Venue.name.like('%'+venue_search+'%'),Venue.location.like('%'+venue_search+'%')))
+
+        if form.min_rating.data:
+            min_rating = float(form.min_rating.data)
+            all_shows = all_shows.filter(or_(Show.rating >= min_rating, Show.rating == None))
+
+        if form.max_rating.data:
+            max_rating = float(form.max_rating.data)
+            all_shows = all_shows.filter(or_(Show.rating <= max_rating, Show.rating == None))
 
     all_shows = all_shows.order_by(Show.timing.asc())
     for show in all_shows:
@@ -110,6 +116,13 @@ def register():
             return redirect(url_for('login'))
     
     return render_template('register.html', title = 'Register', form = form)
+
+
+@app.route('/dashboard')
+@login_required
+def dashboard():
+    return render_template('dashboard.html', title = 'Dashboard')
+
 
 @app.route('/create_venue', methods=['GET', 'POST'])
 @login_required
@@ -371,18 +384,29 @@ def user_bookings():
 @app.route('/venue_page/<int:venue_id>')
 def venue_page(venue_id):
     venue = Venue.query.get_or_404(venue_id)
+    context = []
+    for show in venue.shows:
+        sv = sv = Show_Venue.query.get((show.id,venue_id)).sold
+        context.append((show, sv))
+
     pic_base64 = None
     if venue.pic:
         pic_base64 = b64encode(venue.pic).decode('utf-8')
-    return render_template('venue_page.html', title=venue.name, venue = venue, pic_base64 = pic_base64)
+    return render_template('venue_page.html', title=venue.name, venue = venue, context=context, pic_base64 = pic_base64)
 
 @app.route('/show_page/<int:show_id>')
 def show_page(show_id):
     show = Show.query.get_or_404(show_id)
+    context = []
+    for venue in show.venues:
+        sv = Show_Venue.query.get((show_id,venue.id)).sold
+        context.append((venue, sv))
+    
     pic_base64 = None
     if show.pic:
         pic_base64 = b64encode(show.pic).decode('utf-8')
-    return render_template('show_page.html', title=show.name, show = show, pic_base64 = pic_base64)
+
+    return render_template('show_page.html', title=show.name, show = show, context = context, pic_base64 = pic_base64)
 
 
 @app.route('/manage_venues')

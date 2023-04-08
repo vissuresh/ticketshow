@@ -39,7 +39,23 @@
                 <span style="color:red;">[{{error}}]</span>
                 {% endfor %}
             </div>
-            <div class="col">
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-1">
+                {{form.min_rating()}}
+                {% for error in form.min_rating.errors %}
+                <span style="color:red;">[{{error}}]</span>
+                {% endfor %}
+            </div>
+            <div class="col-1">
+                {{form.max_rating()}}
+                {% for error in form.max_rating.errors %}
+                <span style="color:red;">[{{error}}]</span>
+                {% endfor %}
+            </div>
+
+            <div class="col d-flex justify-content-center">
                 {{form.submit()}}
             </div>
         </div>

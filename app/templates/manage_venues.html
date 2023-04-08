@@ -39,7 +39,7 @@
                     </a>
                     
                     <a href="{{ url_for('delete_venue',venue_id=venue.id) }}">
-                        <button type="button" class="btn btn-danger">DELETE</button>
+                        <button type="button" class="btn btn-danger" onclick="return showConfirmation()">DELETE</button>
                     </a>
                     
                   </div>

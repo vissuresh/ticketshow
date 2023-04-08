@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    .card{
+        /* max-width: 20%; */
+    }
+</style>
+    <div class="container">
+        
+
+        <div class="row mb-5">
+
+            <div class="col text-center">
+                <div class="card p-5">
+                    <a href = "{{url_for('user_bookings')}}">
+                        <div class="card-title"><h2>My Bookings</h1></div>
+                    </a>
+                </div>
+            </div>
+
+            <div class="col text-center">
+                <div class="card p-5">
+                    <a href = "{{url_for('index')}}">
+                        <div class="card-title"><h2>Search</h1></div>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        {% if current_user.username=='admin' %}
+            <div class="row">
+
+                <div class="col text-center">
+                    <div class="card p-5">
+                        <a href = "{{url_for('manage_shows')}}">
+                            <div class="card-title"><h2>Manage Shows</h1></div>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="col text-center">
+                    <div class="card p-5">
+                        <a href = "{{url_for('manage_venues')}}">
+                            <div class="card-title"><h2>Manage Venues</h1></div>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        {% endif %}
+
+        
+    </div>
+{% endblock %}

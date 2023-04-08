@@ -27,6 +27,51 @@
                 <div class="col align-self-center"> <h5>{{venue.capacity}}</h5> </div>
             </div>
 
+            <div class="row">
+
+                <table class="table table-dark table-striped text-center">
+                    <thead>
+                        <tr>
+                          <th scope="col">#</th>
+                          <th scope="col">Show</th>
+                          <th scope="col">Timing</th>
+                          <th scope="col">Price</th>
+                          <th scope="col">Book</th>
+                        </tr>
+                    </thead>
+            
+                    <tbody>
+                        {% for x in context %}
+                        <tr>
+                            <td>{{loop.index}}</td>
+                            <td>
+                                <a href="{{url_for('show_page', show_id = x[0].id)}}">
+                                    {{x[0].name}}
+                                </a>
+                            </td>
+                            <td>{{x[0].timing.strftime('%I:%M %p, %d-%b-%Y')}}</td>
+                            <td>{{x[0].price}}</td>
+                            <td>
+                                {% if x[1] >= venue.capacity %}
+                                    <button type="button" class="btn btn-danger" disabled>Houseful</button>
+                                {% elif x[1] >= 0.5 * venue.capacity %}
+                                    <a href="{{ url_for('book_show' , show_id=x[0].id , venue_id=venue.id) }}">
+                                        <button type="button" class="btn btn-warning">Fast Filling</button>
+                                    </a>
+                                {% else %}
+                                    <a href="{{ url_for('book_show' , show_id=x[0].id , venue_id=venue.id) }}">
+                                        <button type="button" class="btn btn-primary">Book</button>
+                                    </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+
+            </div>
+
         </div>
 
         <div class="col">

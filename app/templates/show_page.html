@@ -4,10 +4,14 @@
 
     <!-- Head section -->
     <div class="row mb-5 bg-body p-3">
-        <div class="col-3">
+        <div class="col">
             <h2>{{show.name}}</h2>
         </div>
-        <div class="col-1 align-self-end">
+
+        <div class="col" style="color: goldenrod;">
+            <h4>Rating: {{show.rating}}</h4>
+        </div>
+        <div class="col d-flex justify-content-end">
             <h6>Show ID: {{show.id}}</h6>
         </div>
     </div>
@@ -25,6 +29,48 @@
             <div class="row">
                 <div class="col-2"> <h4>Price: </h4> </div>
                 <div class="col align-self-center"> <h5>{{show.price}}</h5> </div>
+            </div>
+
+
+            <div class="row">
+
+                <table class="table table-dark table-striped text-center">
+                    <thead>
+                        <tr>
+                          <th scope="col">#</th>
+                          <th scope="col">Venue</th>
+                          <th scope="col">Book</th>
+                        </tr>
+                    </thead>
+            
+                    <tbody>
+                        {% for x in context %}
+                        <tr>
+                            <td>{{loop.index}}</td>
+                            <td>
+                                <a href="{{url_for('venue_page', venue_id = x[0].id)}}">
+                                    {{x[0].name}} , {{x[0].location}}
+                                </a>
+                            </td>
+                            <td>
+                                {% if x[1] >= x[0].capacity %}
+                                    <button type="button" class="btn btn-danger" disabled>Houseful</button>
+                                {% elif x[1] >= 0.5 * x[0].capacity %}
+                                    <a href="{{ url_for('book_show' , show_id=show.id , venue_id=x[0].id) }}">
+                                        <button type="button" class="btn btn-warning">Fast Filling</button>
+                                    </a>
+                                {% else %}
+                                    <a href="{{ url_for('book_show' , show_id=show.id , venue_id=x[0].id) }}">
+                                        <button type="button" class="btn btn-primary">Book</button>
+                                    </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+
             </div>
 
         </div>

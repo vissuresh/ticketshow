@@ -14,7 +14,7 @@
             <p><span>Venue Capacity: </span>{{venue.capacity}}</p>
             <p><span>Available: </span>{{form.available}}</p>
         
-            <form action = "" method="POST" novalidate>
+            <form action = "" method="POST" novalidate onsubmit="return showConfirmation()">
                 {{ form.hidden_tag() }}
         
                 <label for="qty" class="form-label mb-4">{{form.qty.label}}</label>

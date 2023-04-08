@@ -73,6 +73,8 @@ class SearchForm(FlaskForm):
     show_search = StringField('Show',render_kw={"placeholder": "Search Shows/Tags"}, validators = [Optional(),])
     from_date = DateTimeLocalField('From', format="%Y-%m-%dT%H:%M", render_kw={"placeholder": "From DateTime: "}, validators = [Optional(),])
     till_date = DateTimeLocalField('Till', format="%Y-%m-%dT%H:%M", render_kw={"placeholder": "To DateTime:"}, validators = [Optional(),])
+    min_rating = DecimalField(render_kw={"placeholder": "Min Rating", "style": "width: 100px;", "step":0.1, "min":0, "max":5} , validators = [Optional(),])
+    max_rating = DecimalField(render_kw={"placeholder": "Max Rating", "style": "width: 100px;", "step":0.1, "min":0, "max":5} , validators = [Optional(),])
     submit = SubmitField('Search')
 
 class RatingForm(FlaskForm):

@@ -62,6 +62,8 @@ class Show(db.Model):
     caption = db.Column(db.String(128))
     timing = db.Column(db.DateTime, index = True, nullable = False)
     price = db.Column(db.Integer, index = True, nullable = False)
+    rating = db.Column(db.Integer, nullable = True)
+    rated_bookings = db.Column(db.Integer, default = 0)
     pic = db.Column(db.LargeBinary)
 
     tags = db.relationship('Tag', backref = 'show', lazy = 'dynamic', cascade = 'all, delete')
@@ -81,7 +83,7 @@ class Show(db.Model):
 
         if data.get('timing'):
             self.timing = data['timing']
-    
+
         if data.get('price'):
             self.price = data['price']
 
@@ -90,7 +92,16 @@ class Show(db.Model):
                 self.pic = data['pic'].read()
 
     def update_rating(self, rating):
-        
+        if self.rated_bookings ==0 or self.rated_bookings is None:
+            self.rated_bookings =1
+            self.rating = rating
+
+        else:
+            prev_sum = self.rating * self.rated_bookings
+            self.rated_bookings +=1
+            self.rating = (prev_sum +rating) / self.rated_bookings
+            self.rating = round(self.rating,1)
+            
 
     def __repr__(self):
         return 'Name: {}'.format(self.name)
