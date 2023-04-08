@@ -9,42 +9,6 @@ from datetime import datetime
 from base64 import b64encode
 from sqlalchemy import or_
 
-
-""" Use as API
-@app.route('/search/all')
-def search():
-    args = request.args
-    show_search = args.get('show')
-    venue_search = args.get('venue')
-    from_date = args.get('from')
-    till_date = args.get('till')
-    sv = set()
-
-    all_shows = Show.query
-    if show_search:
-        all_shows = all_shows.filter(or_(Show.name.like('%'+show_search+'%'), Show.tags.any(Tag.tag == show_search)))
-
-    if from_date:
-        from_date = datetime.strptime(from_date, '%Y-%m-%d %H:%M:%S')
-        all_shows = all_shows.filter(Show.timing >= from_date)
-
-    if till_date:
-        till_date = datetime.strptime(till_date, '%Y-%m-%d %H:%M:%S')
-        all_shows = all_shows.filter(Show.timing <= till_date)
-
-    all_venues = Venue.query
-    if venue_search:
-        all_venues = all_venues.filter(or_(Venue.name.like('%'+venue_search+'%'),Venue.location.like('%'+venue_search+'%')))
-
-    for show in all_shows:
-        for venue in all_venues:
-            if venue in show.venues:
-                sv.add((show,venue))
-
-    res = list(sv)
-    return render_template('display_results.html', title = "Search Results", res = res)
-"""
-
 def check_admin_decor(my_route):
 
     def wrapper_func(*args, **kwargs):
@@ -70,7 +34,7 @@ def index():
     if form.validate_on_submit():
         if form.show_search.data:
             show_search = form.show_search.data
-            all_shows = all_shows.filter(or_(Show.name.like('%'+show_search+'%'), Show.tags.any(Tag.tag == show_search)))
+            all_shows = all_shows.filter(or_(Show.name.like('%'+show_search+'%'), Show.tags.any(Tag.tag == show_search.lower())))
 
         if form.from_date.data:
             from_date = datetime.strptime(form.from_date.data, '%Y-%m-%d %H:%M:%S')
@@ -88,7 +52,7 @@ def index():
     for show in all_shows:
         for venue in show.venues:
             if venue in all_venues:
-                sv.append((show,venue))
+                sv.append((show,venue,Show_Venue.query.get((show.id,venue.id)).sold))
    
     return render_template('index.html', title = "Search", form=form, sv = sv)
 
@@ -261,8 +225,10 @@ def edit_show(show_id):
     show_to_edit = Show.query.get_or_404(show_id)
     form = ShowForm()
     
-    #Find existing venues
-    existing_venues = show_to_edit.venues
+    # Creating a Deep Copy of existing venues
+    existing_venues = []
+    for venue in show_to_edit.venues:
+        existing_venues.append(venue)
 
     #Choices for venues
     venue_choices = []
@@ -389,6 +355,7 @@ def user_bookings():
     if request.method=='POST':
         booking = Booking.query.get(int(request.form['booking_id']))
         booking.rating = float(request.form['rating'])
+        booking.show.update_rating(float(request.form['rating']))
 
         try:
             db.session.commit()

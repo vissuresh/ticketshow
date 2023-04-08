@@ -75,9 +75,17 @@
                 </td>
                 <td>{{x[0].price}}</td>
                 <td>
-                    <a href="{{ url_for('book_show' , show_id=x[0].id , venue_id=x[1].id) }}">
-                        <button type="button" class="btn btn-primary">Book</button>
-                    </a>
+                    {% if x[2] >= x[1].capacity %}
+                        <button type="button" class="btn btn-danger" disabled>Houseful</button>
+                    {% elif x[2] >= 0.5 * x[1].capacity %}
+                        <a href="{{ url_for('book_show' , show_id=x[0].id , venue_id=x[1].id) }}">
+                            <button type="button" class="btn btn-warning">Fast Filling</button>
+                        </a>
+                    {% else %}
+                        <a href="{{ url_for('book_show' , show_id=x[0].id , venue_id=x[1].id) }}">
+                            <button type="button" class="btn btn-primary">Book</button>
+                        </a>
+                    {% endif %}
                 </td>
             </tr>
             {% endfor %}

@@ -35,12 +35,22 @@ class Venue(db.Model):
     __table_args__ = (UniqueConstraint('name', 'location', name='u_venue_name_loc'),)
 
     def set_data(self, data):
-        self.name = data['name']
-        self.caption = data['caption']
-        self.location = data['location']
-        self.capacity = data['capacity']
-        if(data['pic'].filename != ''):
-            self.pic = data['pic'].read()
+        if data.get('name'):
+            self.name = data['name']
+
+        if data.get('caption'):    
+            self.caption = data['caption']
+
+        if data.get('location'):
+            self.location = data['location']
+
+        if data.get('capacity'):
+            self.capacity = data['capacity']
+
+
+        if(data.get('pic')):
+            if(data['pic'].filename != ''):
+                self.pic = data['pic'].read()
 
     def __repr__(self):
         return '<Name: {}, Location: {}>'.format(self.name, self.location)
@@ -57,15 +67,30 @@ class Show(db.Model):
     tags = db.relationship('Tag', backref = 'show', lazy = 'dynamic', cascade = 'all, delete')
     bookings = db.relationship('Booking', backref = 'show', lazy = 'dynamic', cascade = 'all, delete')
 
-    __table_args__ = (UniqueConstraint('name', 'timing', name='u_venue_name_loc'),)
+    __table_args__ = (UniqueConstraint('name', 'timing', name='u_show_name_timing'),)
 
     def set_data(self, data):
-        self.name = data['name']
-        self.caption = data['caption']
-        self.timing = data['timing']
-        self.price = data['price']
-        if(data['pic'].filename != ''):
-            self.pic = data['pic'].read()
+        if data.get('name'):
+            self.name = data['name']
+
+        if data.get('caption'):    
+            self.caption = data['caption']
+
+        if data.get('capacity'):    
+            self.capacity = data['capacity']
+
+        if data.get('timing'):
+            self.timing = data['timing']
+    
+        if data.get('price'):
+            self.price = data['price']
+
+        if(data.get('pic')):
+            if(data['pic'].filename != ''):
+                self.pic = data['pic'].read()
+
+    def update_rating(self, rating):
+        
 
     def __repr__(self):
         return 'Name: {}'.format(self.name)
